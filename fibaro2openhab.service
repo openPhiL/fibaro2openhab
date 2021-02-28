@@ -2,7 +2,7 @@
 Description=Run Fibaro2Openhab
 After=syslog.target
 [Service]
-ExecStart=/usr/sbin/python3 /home/phil/fibaro2openhab.py
+ExecStart=/usr/bin/python3 /root/fibaro2openhab/fibaro2openhab.py
 Restart=always
 [Install]
 WantedBy=multi-user.target
