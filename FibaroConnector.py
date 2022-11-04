@@ -1,6 +1,7 @@
 import json
 import requests 
 import logging 
+from logging.handlers import RotatingFileHandler
 import time
 import sys
 from pprint import pformat
@@ -21,16 +22,14 @@ class FibaroConnector:
         console_handler.setFormatter(formatter)
         console_handler.name = "consoleHandler"
         ## Logger Handler to file
-        """
-        file_handler = logging.handlers.RotatingFileHandler(self.log_file, maxBytes=5000, backupCount=1)
-        file_handler.setFormatter(self.formatter)
+        file_handler = RotatingFileHandler(path_to_log_file, maxBytes=5000, backupCount=1)
+        file_handler.setFormatter(formatter)
         file_handler.name = "fileHandler"
-        """
         #Load Logger
         self.logger = logging.getLogger('fibaro2openhab')
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(console_handler)
-        ##//self.logger.addHandler(file_handler)
+        self.logger.addHandler(file_handler)
         #Load session
         fibaroLite_adapter = requests.adapters.HTTPAdapter(max_retries=3)
         self.session = requests.Session()
@@ -70,7 +69,7 @@ class FibaroConnector:
     def post_to_openhab(self,openhabItem,new_data):
         post_url = url_openhab + openhabItem + '/state'
         self.logger.debug("URL:"+str(post_url))
-        openhab_response = requests.put(url = post_url, data = new_data, verify=False, headers={"content-type":"text"}) 
+        openhab_response = requests.put(url = post_url, data = new_data, headers={"content-type":"text"}) 
         self.logger.debug('Response: ' +pformat(openhab_response))
         try:
             openhab_response_json = openhab_response.json()
