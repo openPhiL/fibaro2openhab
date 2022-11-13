@@ -90,11 +90,15 @@ class FibaroConnector:
                 for current_change in response_json['changes']:
 
                     self.logger.debug('Response: ' + pformat(response_json))
-                    self.logger.debug('Changes detected')
+                    self.logger.debug('Changes type  detected')
                     triggeringID = str(current_change['id'])
                     triggeringObject = configured_devices.get(triggeringID)
                     
-                    if triggeringObject == None: 
+                    if not current_change.get('log') == None: 
+                        self.logger.debug('just a log - ignored') 
+                        continue
+
+                    if triggeringObject == None:
                         self.logger.warning('Triggering Object with ID ' + triggeringID + ' is unknown or not mapped') 
                         continue
                     
@@ -106,7 +110,7 @@ class FibaroConnector:
                                 self.logger.info(triggeringObject[action]['name'] + '('+ triggeringID +') triggered action was "' + action + '" with "' + changed_data +'" mapped to "' + mapped_value + '"')
                                 self.post_to_openhab(triggeringObject[action]['name'], mapped_value)
                             else:
-                                self.logger.info(triggeringObject[action]['name'] + '('+ triggeringID +') triggered action was "' + action + '" with "' + changed_data )
+                                self.logger.info(triggeringObject[action]['name'] + '('+ triggeringID +') triggered action was "' + action + '" with "' + changed_data + '"')
                                 self.post_to_openhab(triggeringObject[action]['name'], changed_data)
                         else:
                             self.logger.debug(triggeringObject[action]['name'] + '('+ triggeringID +') defined action "' + action + '" was not found ')
